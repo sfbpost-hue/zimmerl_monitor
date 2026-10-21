@@ -59,11 +59,16 @@ def fetch_slots():
     end = add_months(start, MONTHS_AHEAD)
     found = {}
     day = start
+    tablein_headers = {
+        'Accept': 'application/json, text/plain, */*',
+        'Origin': 'https://widget.tablein.com',
+        'Referer': 'https://widget.tablein.com/',
+    }
     while day < end:
         last = min(day + dt.timedelta(days=WINDOW_DAYS), end)
         qs = urllib.parse.urlencode({'start_date': day.isoformat(), 'end_date': last.isoformat(),
                                      'restaurant_id': RESTAURANT, 'guests': 2})
-        result = request(BASE + '?' + qs)
+        result = request(BASE + '?' + qs, headers=tablein_headers)
         if not isinstance(result, list):
             raise ValueError('Unerwartete API-Antwort: erwartete Liste mit Tagen. Kein Status gespeichert.')
         for item in result:
@@ -145,3 +150,4 @@ if __name__ == '__main__':
     except Exception as exc:
         print('FEHLER:', str(exc).replace(BOT_TOKEN, '[REDACTED]'), file=sys.stderr)
         sys.exit(1)
+
